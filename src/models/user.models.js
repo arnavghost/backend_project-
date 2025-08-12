@@ -55,7 +55,7 @@ const userSchema= new Schema(
 userSchema.pre("save", async function(next) {      //have used pre(middleware) hook to hash the password before saving it // async function is used when it takes time to fetch the data and all 
     if(!this.isModified("password")) return next();
 
-    this.password= bcrypt.hash(this.password,10)
+    this.password= await bcrypt.hash(this.password,10)
     next()
 })
 
