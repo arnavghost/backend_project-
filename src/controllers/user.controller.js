@@ -7,6 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 
 // Controller function for registering a user
 const registerUser = asyncHandler(async (req, res) => {
+    
     //1- steps to register user
     const {fullname,email,username,password}= req.body
     console.log("email:",email)
@@ -17,7 +18,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(400,"all fields are required")
     }
 
-    const existedUser= User.findOne({
+    const existedUser= await User.findOne({
         $or: [{username}, {email}]
     })
 
@@ -26,7 +27,12 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const avatarLocalPath= req.files?.avatar[0]?.path;
-    const coverImageLocalPath= req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath= req.files?.coverImage[0]?.path;
+
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage)
+    && req.files.coverImage.length > 0){
+    coverImageLocalPath=req.files.coverImage[0].path}
 
     if(!avatarLocalPath){
         throw new ApiError(400,"avatar file is required")
@@ -34,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const avatar= await uploadOnCloudinary(avatarLocalPath)
     const coverImage= await uploadOnCloudinary(coverImageLocalPath)
-
+    
     if(!avatarLocalPath){
         throw new ApiError(400,"avatar file is required")
     }
@@ -43,17 +49,15 @@ const registerUser = asyncHandler(async (req, res) => {
         {
             fullname,
             avatar: avatar.url,
-            coverImage: coverImage.url?.url || "",
+            coverImage: coverImage?.url || "",
             email,
             password,
             username: username.toLowerCase()
         }
     )
 
-    const createdUser= await User.findById(user._id).select(
-        "-password - refreshToken"
-    )
-
+    const createdUser = await User.findById(user._id).select("-password -refreshToken");
+    
     if(!createdUser){
         throw new ApiError(500,"something went wrong while registerig the user ")
     }
@@ -79,3 +83,4 @@ export { registerUser }
     //remove password and refresh token field from reponse
     ///check for user creation 
     // return response
+
