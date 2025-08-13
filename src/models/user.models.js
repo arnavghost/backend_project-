@@ -91,3 +91,5 @@ userSchema.methods.IsPasswordCorrect= async function  // to comapre the password
  }
 
 export const User=mongoose.model("User", userSchema)
+
+//usermodel
