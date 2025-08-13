@@ -12,3 +12,6 @@ const connectDb= async() => {
 }
 
 export default connectDb
+
+
+//index.js
