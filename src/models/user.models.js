@@ -59,7 +59,7 @@ userSchema.pre("save", async function(next) {      //have used pre(middleware) h
     next()
 })
 
-userSchema.methods.IsPasswordCorrect= async function  // to comapre the password when the user logins
+userSchema.methods.isPasswordCorrect= async function  // to comapre the password when the user logins
  (password){
     return await bcrypt.compare(password, this.password)
  }
